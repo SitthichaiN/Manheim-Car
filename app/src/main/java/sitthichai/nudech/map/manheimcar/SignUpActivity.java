@@ -1,10 +1,13 @@
 package sitthichai.nudech.map.manheimcar;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +16,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.jibble.simpleftp.SimpleFTP;
+
+import java.io.File;
 
 import static sitthichai.nudech.map.manheimcar.R.id.button;
 
@@ -26,6 +40,8 @@ public class SignUpActivity extends AppCompatActivity {
     private String nameString, userString, passwordString, imageString, imagePathString, imageNameString;
     private Uri uri;
     private boolean aBoolean = true;
+    private String uriString = "http://swiftcodingthai.com/Man/images";
+
 
 
     @Override
@@ -64,7 +80,12 @@ public class SignUpActivity extends AppCompatActivity {
                     myAlert.myDialog();
                 } else {
                     // Choose image finished
+                    upLoadImageToServer();
 
+                    // Update string to Server
+                    AddUser addUser = new AddUser(SignUpActivity.this);
+                    MyConstants myConstants = new MyConstants();
+                    addUser.execute(myConstants.getUrlAddUserString());
 
                 }
             }//OnClick
@@ -81,6 +102,87 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
     }   // Method
+
+    // Create inner class
+    private class AddUser extends AsyncTask<String, Void, String> {
+
+        // Explicit
+        private Context context;
+
+        public AddUser(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            try {
+                MyConstants myConstants = new MyConstants();
+                imageString = myConstants.getUrlAddUserString() + imageString;
+
+                OkHttpClient okHttpClient = new OkHttpClient();
+                RequestBody requestBody = new FormEncodingBuilder()
+                        .add("isAdd", "true")
+                        .add("Name", nameString)
+                        .add("User", userString)
+                        .add("Password", passwordString)
+                        .add("Image", imageString)
+                        .build();
+                Request.Builder builder = new Request.Builder();
+                Request request = builder.url(params[0]).post(requestBody).build();
+                Response response = okHttpClient.newCall(request).execute();
+                return response.body().string();
+            }
+            catch (Exception e) {
+                Log.d("23octV1", "e doInBack -->" + e.toString());
+                return null;
+            }
+        }   // doInBack -- connect to internet
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.d("23octV2", "Result --> " + s);
+
+            String result = null;
+            if (Boolean.parseBoolean(s)) {
+                // Upload compleate
+                result = "Upload Value Finished";
+                Toast.makeText(context,result,Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                result = "Cannot Upload";
+                Toast.makeText(context,result,Toast.LENGTH_SHORT).show();
+            }
+        }   // onPost
+
+
+    } // AddUser Class
+
+
+    private void upLoadImageToServer() {
+        // Create policy
+        StrictMode.ThreadPolicy threadPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(threadPolicy);
+        try {
+            MyConstants myConstants = new MyConstants();
+            SimpleFTP simpleFTP = new SimpleFTP();
+            simpleFTP.connect(myConstants.getHostString(),
+                    myConstants.getAnInt(),
+                    myConstants.getUserString(),
+                    myConstants.getPasswordString());
+            simpleFTP.bin();
+            simpleFTP.cwd("images"); // Folder for ftp
+            simpleFTP.stor(new File(imagePathString));
+            simpleFTP.disconnect();
+            Toast.makeText(SignUpActivity.this,"Upload " + imageNameString + " Finished", Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            //e.printStackTrace();
+            Log.d("23octV1", "simpleFTP --> " + e.toString());
+        }
+
+    } // Upload
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
