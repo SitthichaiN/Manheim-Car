@@ -25,7 +25,7 @@
         android:textColor="@color/aText" />
 
     <Button
-        android:text="Button"
+        android:text="@string/signUp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/button3"
