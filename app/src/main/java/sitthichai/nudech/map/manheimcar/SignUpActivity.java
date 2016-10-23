@@ -25,6 +25,7 @@ public class SignUpActivity extends AppCompatActivity {
     private Button button;
     private String nameString, userString, passwordString, imageString, imagePathString, imageNameString;
     private Uri uri;
+    private boolean aBoolean = true;
 
 
     @Override
@@ -56,8 +57,17 @@ public class SignUpActivity extends AppCompatActivity {
                     MyAlert myAlert = new MyAlert(SignUpActivity.this,
                             R.drawable.bird48, "มีช่องว่าง", "กรุณากรอกทุกช่อง เด้อ!");
                     myAlert.myDialog();
-                }  //OnClick
-            }
+                }  else if (aBoolean) {
+                    // Non choose image
+                    MyAlert myAlert = new MyAlert(SignUpActivity.this, R.drawable.doremon48,
+                            "No image", "Please select image");
+                    myAlert.myDialog();
+                } else {
+                    // Choose image finished
+
+
+                }
+            }//OnClick
         });
 
         // Image controller
@@ -78,6 +88,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         if ((requestCode == 1) && (resultCode == RESULT_OK)) {
             Log.d("23octV1", "RESULT_OK");
+            aBoolean = false;
 
             // Setup image
             uri = data.getData();
