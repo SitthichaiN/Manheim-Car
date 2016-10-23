@@ -1,9 +1,11 @@
 package sitthichai.nudech.map.manheimcar;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,7 +23,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText nameEditText, userEditText, passwordEditText;
     private ImageView imageView;
     private Button button;
-    private String nameString, userString, passwordString, imageString;
+    private String nameString, userString, passwordString, imageString, imagePathString, imageNameString;
     private Uri uri;
 
 
@@ -49,7 +51,7 @@ public class SignUpActivity extends AppCompatActivity {
                 // Check space
                 if (nameString.length() == 0 ||
                         userString.length() == 0 ||
-                        passwordString.length() == 0 ) {
+                        passwordString.length() == 0) {
                     // Have space
                     MyAlert myAlert = new MyAlert(SignUpActivity.this,
                             R.drawable.bird48, "มีช่องว่าง", "กรุณากรอกทุกช่อง เด้อ!");
@@ -64,11 +66,11 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*"); // Every picture
-                startActivityForResult(Intent.createChooser(intent,"Please select Picture"), 1);
+                startActivityForResult(Intent.createChooser(intent, "Please select Picture"), 1);
             }
         });
 
-        }   // Method
+    }   // Method
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -80,15 +82,34 @@ public class SignUpActivity extends AppCompatActivity {
             // Setup image
             uri = data.getData();
             try {
-
                 Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
                 imageView.setImageBitmap(bitmap);
-
             } catch (Exception e) {
                 e.printStackTrace();
             } // Try
+
+            // Find path and name
+            imagePathString = myFindPath(uri);
+            Log.d("23octV1", "imagePathString -->" + imagePathString);
+            imageNameString = imagePathString.substring(imagePathString.lastIndexOf("/"));
+            Log.d("23octV1","imageNameString --> " + imageNameString);
         } // if
 
     }  // onActivityResult
+
+    private String myFindPath(Uri uri) {
+        String result = null;
+        String[] strings = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri,strings,null,null,null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int i = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            result = cursor.getString(i);
+
+        } else {
+            result = uri.getPath();
+        }
+        return result;
+    }
 
 }   // Main
