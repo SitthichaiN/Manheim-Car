@@ -116,13 +116,12 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 JSONArray jsonArray = new JSONArray(s);
+                nameStrings = new String[jsonArray.length()];
+                imageStrings = new String[jsonArray.length()];
+                latStrings= new String[jsonArray.length()];
+                lngStrings = new String[jsonArray.length()];
                 for (int i = 0; i < jsonArray.length(); i ++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    nameStrings = new String[jsonArray.length()];
-                    imageStrings = new String[jsonArray.length()];
-                    latStrings= new String[jsonArray.length()];
-                    lngStrings = new String[jsonArray.length()];
-
                     // Check user
                     if (userString.equals(jsonObject.getString("User"))) {
                         aBoolean = false;
@@ -136,18 +135,25 @@ public class MainActivity extends AppCompatActivity {
                     latStrings[i] = jsonObject.getString("Lat");
                     lngStrings[i] = jsonObject.getString("Lng");
 
+                    Log.d("24octV5", "getString:Name -->" + nameStrings[i]);
+                    Log.d("24octV5", "getString:Image -->" + imageStrings[i]);
+
                 }   // for
 
+                Log.d("24octV5", "Boolean -->" + aBoolean);
                 if (aBoolean) {
                     MyAlert myAlert = new MyAlert(context, R.drawable.bird48, titleString, messageString);
                     myAlert.myDialog();
 
                 } else if (passwordString.equals(truePasswordString)) {
+
                     // Password True
                     Toast.makeText(context, "Welcome", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, ListService.class);
 
                     // Push data list view
+                    Log.d("24octV5", "Name -->" + nameStrings);
+
                     intent.putExtra("Name", nameStrings);
                     intent.putExtra("Image", imageStrings);
                     intent.putExtra("Lat", latStrings);
