@@ -146,6 +146,13 @@ public class MainActivity extends AppCompatActivity {
                     // Password True
                     Toast.makeText(context, "Welcome", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, ListService.class);
+
+                    // Push data list view
+                    intent.putExtra("Name", nameStrings);
+                    intent.putExtra("Image", imageStrings);
+                    intent.putExtra("Lat", latStrings);
+                    intent.putExtra("Lng", lngStrings);
+
                     startActivity(intent);
                     finish();
                 } else {
