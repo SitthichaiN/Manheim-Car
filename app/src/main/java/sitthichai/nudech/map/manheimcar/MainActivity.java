@@ -14,6 +14,9 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity {
 
     /*
@@ -23,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private Button signInButton, signUpButton;
     private EditText userEditText, passwordEditText;
     private String userString, passwordString;
-
+    private String[] nameStrings, imageStrings, latStrings, lngStrings;
+    private boolean aBoolean = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
                     synData.execute(myConstants.getUrlJSONString(),
                             myConstants.getTestTitleString(),
                             myConstants.getTestMessageString());
-
                 }
 
             }   // OnClick
@@ -80,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Explicit
         private Context context; // Alt+Insert
-        private String titleString, messageString;
+        private String titleString, messageString, truePasswordString;
 
         public SynData(Context context) {
             this.context = context;
@@ -109,6 +112,39 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             Log.d("24octV1", "JSON --> " + s);
+
+            try {
+                JSONArray jsonArray = new JSONArray(s);
+                for (int i = 0; i < jsonArray.length(); i ++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    nameStrings = new String[jsonArray.length()];
+                    imageStrings = new String[jsonArray.length()];
+                    latStrings= new String[jsonArray.length()];
+                    lngStrings = new String[jsonArray.length()];
+
+                    // Check user
+                    if (userString.equals(jsonObject.getString("User"))) {
+                        aBoolean = false;
+                        truePasswordString = jsonObject.getString("Password");
+
+                    }   // if
+
+                    // set up array
+                    nameStrings[i] = jsonObject.getString("Name");
+                    imageStrings[i] = jsonObject.getString("Image");
+                    latStrings[i] = jsonObject.getString("Lat");
+                    lngStrings[i] = jsonObject.getString("Lng");
+
+                }   // for
+
+                if (aBoolean) {
+                    MyAlert myAlert = new MyAlert(context, R.drawable.bird48, titleString, messageString);
+                    myAlert.myDialog();
+
+                }
+            } catch (Exception e) {
+                Log.d("24octV2", "e OnPost --> " + e.toString());
+            }
         }
     }   // SynData class
 }   // Main class

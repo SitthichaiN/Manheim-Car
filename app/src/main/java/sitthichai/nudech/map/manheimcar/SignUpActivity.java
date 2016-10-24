@@ -118,7 +118,7 @@ public class SignUpActivity extends AppCompatActivity {
 
             try {
                 MyConstants myConstants = new MyConstants();
-                imageString = myConstants.getUrlAddUserString() + imageString;
+                imageString = myConstants.getUrlImageString() + imageNameString;
 
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormEncodingBuilder()
