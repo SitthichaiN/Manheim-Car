@@ -75,6 +75,44 @@ public class ListService extends AppCompatActivity {
 
     }   //main method
 
+    // Manage activities
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Set default location
+        locationManager.removeUpdates(locationListener);
+        latADouble = 13.719747;
+        lngADouble = 100.703239;
+
+        // Find by network..
+        Location networkLocation = myFindLocation(LocationManager.NETWORK_PROVIDER);
+        if (networkLocation != null) {
+            latADouble = networkLocation.getLatitude();
+            lngADouble = networkLocation.getLongitude();
+        }
+
+        // Find by GPS card..
+        Location gpsLocation = myFindLocation(LocationManager.GPS_PROVIDER);
+        if (gpsLocation != null) {
+            latADouble = gpsLocation.getLatitude();
+            lngADouble = gpsLocation.getLongitude();
+        }
+
+        Log.d("30octV1", "Lat --> " + latADouble);
+        Log.d("30octV1", "Lng --> " + lngADouble);
+
+    } // onResume
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        locationManager.removeUpdates(locationListener);
+
+    }
+
     public Location myFindLocation(String strProvider) {
         Location location = null;
 
