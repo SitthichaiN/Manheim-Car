@@ -89,7 +89,19 @@ public class ListService extends AppCompatActivity {
 
                 Log.d("30octV2", "bolLat --> " + bolLat);
                 Log.d("30octV2", "bolLng --> " + bolLng);
-            }
+
+                if (bolLat && bolLng) {
+                    Intent intent = new Intent(ListService.this, DetailActivity.class);
+                    startActivity(intent);
+                } else {
+                    MyAlert myAlert = new MyAlert(ListService.this,
+                            R.drawable.bird48,
+                            "No Location",
+                            "No Lat/Lng on this person");
+                    myAlert.myDialog();
+
+                }
+            } //OnItemClickListener
         });
 
         // Setup for Location
