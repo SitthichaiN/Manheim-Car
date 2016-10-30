@@ -6,12 +6,19 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 public class ListService extends AppCompatActivity {
 
@@ -21,6 +28,7 @@ public class ListService extends AppCompatActivity {
     private LocationManager locationManager;
     private Criteria criteria;
     private Double latADouble, lngADouble;
+    private String idLoginUserString;
 
 
     @Override
@@ -36,6 +44,7 @@ public class ListService extends AppCompatActivity {
         latStrings = getIntent().getStringArrayExtra("Lat");
         lngStrings = getIntent().getStringArrayExtra("Lng");
         imageStrings = getIntent().getStringArrayExtra("Image");
+        idLoginUserString = getIntent().getStringExtra("id");
 
         // Check Array
         Log.d("24octV3", "Record Count -->" + nameStrings.length);
@@ -104,6 +113,11 @@ public class ListService extends AppCompatActivity {
         Log.d("30octV1", "Lat --> " + latADouble);
         Log.d("30octV1", "Lng --> " + lngADouble);
 
+        // Edit location on server..
+        EditUserLocation editUserLocation = new EditUserLocation(ListService.this);
+        MyConstants myConstants = new MyConstants();
+        editUserLocation.execute(myConstants.getUrlEditLocation());
+
     } // onResume
 
     @Override
@@ -150,4 +164,45 @@ public class ListService extends AppCompatActivity {
 
         }
     }; // locationListener
+
+    private class EditUserLocation extends AsyncTask<String, Void, String> {
+        // Explicit..
+        private Context context;
+        // Create constructor..
+        public EditUserLocation(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                OkHttpClient okHttpClient = new OkHttpClient();
+                RequestBody requestBody = new FormEncodingBuilder()
+                        .add("isAdd", "true")
+                        .add("id", idLoginUserString)
+                        .add("Lat", Double.toString(latADouble))
+                        .add("lng", Double.toString(lngADouble))
+                        .build();
+                Request.Builder builder = new Request.Builder();
+                Request request = builder.url(params[0]).post(requestBody).build();
+                Response response = okHttpClient.newCall(request).execute();
+                return response.body().string();
+
+            } catch (Exception e) {
+                Log.d("30octV1", "e doin --> " + e.toString());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            Log.d("30octV1", "idUserLogin -->" + idLoginUserString);
+            Log.d("30octV1", "Result -->" + s); // True = OK, False = Error
+        }
+
+
+    } // EditUserLocation
+
 }   // main

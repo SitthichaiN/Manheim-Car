@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Explicit
         private Context context; // Alt+Insert
-        private String titleString, messageString, truePasswordString;
+        private String titleString, messageString, truePasswordString, idString;
 
         public SynData(Context context) {
             this.context = context;
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                     if (userString.equals(jsonObject.getString("User"))) {
                         aBoolean = false;
                         truePasswordString = jsonObject.getString("Password");
-
+                        idString = jsonObject.getString("id");
                     }   // if
 
                     // set up array
@@ -151,13 +151,13 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(context, "Welcome", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, ListService.class);
 
-                    // Push data list view
-                    Log.d("24octV5", "Name -->" + nameStrings);
-
-                    intent.putExtra("Name", nameStrings);
-                    intent.putExtra("Image", imageStrings);
-                    intent.putExtra("Lat", latStrings);
-                    intent.putExtra("Lng", lngStrings);
+                    // Push data ListService
+                    //Log.d("24octV5", "Name -->" + nameStrings);
+                    intent.putExtra("id", idString);            // For where edit location..
+                    intent.putExtra("Name", nameStrings);       // For create ListView..
+                    intent.putExtra("Image", imageStrings);     // For create ListView..
+                    intent.putExtra("Lat", latStrings);         // For create ListView..
+                    intent.putExtra("Lng", lngStrings);         // For create ListView..
 
                     startActivity(intent);
                     finish();
