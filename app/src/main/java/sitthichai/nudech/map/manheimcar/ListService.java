@@ -70,8 +70,25 @@ public class ListService extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("24octV4", "onItemClick --> Click");
-                Intent intent = new Intent(ListService.this, DetailActivity.class);
-                startActivity(intent);
+
+                // Check Lat, Lng ==> double
+                boolean bolLat = true;
+                boolean bolLng = true;
+
+                try {
+                    Double dobLat =  Double.parseDouble(String.valueOf(latStrings[position]));
+                } catch (Exception e) {
+                    bolLat = false;
+                }
+
+                try {
+                    Double dobLng =  Double.parseDouble(String.valueOf(lngStrings[position]));
+                } catch (Exception e) {
+                    bolLng = false;
+                }
+
+                Log.d("30octV2", "bolLat --> " + bolLat);
+                Log.d("30octV2", "bolLng --> " + bolLng);
             }
         });
 
