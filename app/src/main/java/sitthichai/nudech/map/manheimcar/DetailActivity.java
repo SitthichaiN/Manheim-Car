@@ -8,6 +8,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -46,7 +48,23 @@ public class DetailActivity extends FragmentActivity implements OnMapReadyCallba
         latADouble = Double.parseDouble(latString);
         lngADouble = Double.parseDouble(lngString);
         latLng = new LatLng(latADouble, lngADouble);
+
+        // Setup map center
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,16));
+
+        // Create Marker
+        mMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .title(nameString)
+                .snippet("This is snippet"));
+
+        // Create other maker
+        LatLng connerLatLng = new LatLng(13.721060, 100.701844);
+        mMap.addMarker(new MarkerOptions()
+                .position(connerLatLng)
+                .title("TEST")
+                .snippet("Turn Left")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_build)));
 
         /*
         // Add a marker in Sydney and move the camera
